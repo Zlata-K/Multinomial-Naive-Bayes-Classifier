@@ -15,6 +15,7 @@ for k in lines[1:-1]: # skipping headers
 for tweet in tweetList:
     wordList = tweet.split(" ")
 
+
     for word in wordList:
         if word not in vocabulary:
             vocabulary.append(word)
