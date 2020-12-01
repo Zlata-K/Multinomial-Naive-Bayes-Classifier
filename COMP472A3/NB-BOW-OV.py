@@ -1,6 +1,15 @@
 import numpy as np
 
 
+def getWordCount():
+    return len(vocabulary)
+
+def printDictContents():
+    for key, value in word_dict.items():
+        print("\nKey: %s" % key)
+        print("Value: %s" % value)
+
+
 """
 Training:
 1. Get the training set tweets. (set of tweets taht are already classified into the correct category)
@@ -30,19 +39,43 @@ unsortedVocabulary = []
 tweetList = []
 totalFakeTweets = 0
 totalFactualTweets = 0
+word_dict = {}
 
 #This takes all the lines from the raw text and saves each head word
 for k in lines[1:-1]: # skipping headers
+    wordCategory = 0 # 0 =  fake, 1 = Factual, -99 = corrupt
     listOfCols = k.split("\t")
     tweetList.append(listOfCols[1])
     #listOfCols[2] is the col with yes/no
     if listOfCols[2] == "no":
         totalFakeTweets += 1
+        wordCategory = 0
     elif listOfCols[2] == "yes":
         totalFactualTweets += 1
+        wordCategory = 1
     else:
         print("incomplete date")
-        
+        wordCategory = -99
+    #add word to dict if its not existing
+    wordList = listOfCols[1].split(" ")
+    #Objects for words will be fake count, true count, totalCount;
+    for word in wordList:
+        if not word in word_dict:
+            if wordCategory == 0:
+                word_dict[word] = [1,0,1]
+            elif wordCategory == 1:
+                word_dict[word] = [0,1,1]
+            else:
+                print("incomplete data")
+        else:
+            word_instance = word_dict[word]
+            if wordCategory == 0:
+                word_instance[0] += 1
+            else:
+                word_instance[1] += 1
+            word_instance[2] += 1
+
+
 #save each word into a list
 for tweet in tweetList:
     wordList = tweet.split(" ")
@@ -50,6 +83,8 @@ for tweet in tweetList:
     for word in wordList:
         if word not in unsortedVocabulary:
             unsortedVocabulary.append(word)
+            
+printDictContents()
 
 #sort the vocabulary
 vocabulary = sorted(unsortedVocabulary)
@@ -59,6 +94,7 @@ totalWords = len(vocabulary)
 print("Total factual tweets: " + str(totalFactualTweets))
 print("Total fake tweets: " + str(totalFakeTweets))
 print("Total tweets: " + str(total_tweets))
+print("total words: "+ str(totalWords))
 
 priorProbabilityFake = totalFakeTweets / total_tweets
 priorProbabilityFactual = totalFactualTweets / total_tweets
@@ -67,29 +103,12 @@ print("=========================================================================
 print("prior prob of fake: " + str(priorProbabilityFake))
 print("prior prob of factual: " + str(priorProbabilityFactual))
 
-#create table
 
 #Objects for words will be fake count, true count, totalCount;
+#create dictionary
 
-#secondTweetList = []
-#secondWordList = []
-#for k in lines[1:-1]: # skipping headers
-#    listOfCols = k.split("\t")
-#    secondTweetList.append(listOfCols[1])
-#    #listOfCols[2] is the col with yes/no
-#    if listOfCols[2] == "no":
-#        totalFakeTweets += 1
-#    elif listOfCols[2] == "yes":
-#        totalFactualTweets += 1
-#    else:
-#        print("incomplete date")
-"""
-#    for tweet in secondTweetList:
-#        secondWordList = tweet.split(" ")
-#
-#   #append word to the vocabulary if it is not a dupe
-#   for word in secondWordList:
-#       print("yeet")
-#       #if word not in unsortedVocabulary:
-#           #unsortedVocabulary.append(word)
-"""
+
+
+#create table
+ 
+
