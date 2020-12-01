@@ -9,7 +9,13 @@ def printDictContents():
         print("\nKey: %s" % key)
         print("Value: %s" % value)
 
+def smoothDictContents():
+    for key, value in word_dict.items():
 
+        fakeCounter = value[0]+smoothing
+        factualCounter = value[1]+smoothing
+        totalCounter = value[2]+smoothing
+        word_dict[key] = [fakeCounter, factualCounter, totalCounter]
 """
 Training:
 1. Get the training set tweets. (set of tweets taht are already classified into the correct category)
@@ -91,6 +97,8 @@ vocabulary = sorted(unsortedVocabulary)
 total_tweets = totalFakeTweets + totalFactualTweets
 totalWords = len(vocabulary)
 
+print("======================================================================================")
+print("Before Smoothing")
 print("Total factual tweets: " + str(totalFactualTweets))
 print("Total fake tweets: " + str(totalFakeTweets))
 print("Total tweets: " + str(total_tweets))
@@ -100,15 +108,16 @@ priorProbabilityFake = totalFakeTweets / total_tweets
 priorProbabilityFactual = totalFactualTweets / total_tweets
 
 print("======================================================================================")
+print("After Smoothing")
+smoothedTotalFactualTweets = totalFactualTweets + (smoothing * totalWords)
+smoothedTotalFakeTweets = totalFakeTweets + (smoothing * totalWords)
+
+print("Total smoothed factual tweets: " + str(smoothedTotalFactualTweets))
+print("Total smoothed fake tweets: " + str(smoothedTotalFakeTweets))
+
+print("======================================================================================")
 print("prior prob of fake: " + str(priorProbabilityFake))
 print("prior prob of factual: " + str(priorProbabilityFactual))
 
-
-#Objects for words will be fake count, true count, totalCount;
-#create dictionary
-
-
-
-#create table
- 
-
+smoothDictContents()
+printDictContents()
