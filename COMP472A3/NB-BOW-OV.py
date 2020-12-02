@@ -16,6 +16,23 @@ def smoothDictContents():
         factualCounter = value[1]+smoothing
         totalCounter = value[2]+smoothing
         word_dict[key] = [fakeCounter, factualCounter, totalCounter]
+
+#tweetList and which class to check for
+def getScore(tweetList, classification):
+    if classification == "yes":
+        index_to_check = 1
+        totalityOfTweets = smoothedTotalFactualTweets
+        score = np.log10(totalityOfTweets / smoothedTotalTweets)
+    else:
+        index_to_check = 0
+        totalityOfTweets = smoothedTotalFakeTweets
+        score = np.log10(totalityOfTweets / smoothedTotalTweets)
+
+    for word in tweetList:
+        if word in word_dict:
+            score += np.log10(word_dict[word][index_to_check] / totalityOfTweets)
+    return score
+
 """
 Training:
 1. Get the training set tweets. (set of tweets taht are already classified into the correct category)
@@ -111,7 +128,7 @@ print("=========================================================================
 print("After Smoothing")
 smoothedTotalFactualTweets = totalFactualTweets + (smoothing * totalWords)
 smoothedTotalFakeTweets = totalFakeTweets + (smoothing * totalWords)
-
+smoothedTotalTweets = smoothedTotalFakeTweets + smoothedTotalFactualTweets
 print("Total smoothed factual tweets: " + str(smoothedTotalFactualTweets))
 print("Total smoothed fake tweets: " + str(smoothedTotalFakeTweets))
 
@@ -121,3 +138,37 @@ print("prior prob of factual: " + str(priorProbabilityFactual))
 
 smoothDictContents()
 printDictContents()
+
+#get testing tweets:
+test_input = open("DataSet/covid_test_public.tsv","r", encoding="utf8")
+test_rawText = test_input.read().lower()
+test_lines = test_rawText.split("\n")
+
+#This takes all the lines from the raw text and saves each head word
+counter = 0 ;
+for k in lines[1:-1]: # skipping headers
+    listOfCols = k.split("\t")
+    tweetID = listOfCols[0]
+    testing_wordList = listOfCols[1].split(" ")
+    correctAnswer = listOfCols[2]
+
+    factualScore = getScore(testing_wordList, "yes")
+    fakeScore = getScore(testing_wordList, "no")
+    print("==================================================================")
+    print(str(counter))
+    print(str(factualScore))
+    print(str(fakeScore))
+    counter += 1
+
+    if factualScore >= fakeScore:
+        finalScore = np.format_float_scientific(factualScore, precision=3)
+        prediction = "yes"
+    else:
+        finalScore = np.format_float_scientific(fakeScore,  precision=3)
+        prediction = "no"
+    print("Final score")
+    print(finalScore)
+
+
+
+
