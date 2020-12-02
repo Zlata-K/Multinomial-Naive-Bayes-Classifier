@@ -1,6 +1,5 @@
 import numpy as np
 
-
 def getWordCount():
     return len(vocabulary)
 
@@ -146,6 +145,8 @@ test_lines = test_rawText.split("\n")
 
 #This takes all the lines from the raw text and saves each head word
 counter = 0 ;
+f = open("trace_NB-BOW-OV.txt", "w")
+f.close()
 for k in lines[1:-1]: # skipping headers
     listOfCols = k.split("\t")
     tweetID = listOfCols[0]
@@ -160,7 +161,7 @@ for k in lines[1:-1]: # skipping headers
     print(str(fakeScore))
     counter += 1
 
-    if factualScore >= fakeScore:
+    if factualScore > fakeScore:
         finalScore = np.format_float_scientific(factualScore, precision=3)
         prediction = "yes"
     else:
@@ -168,7 +169,13 @@ for k in lines[1:-1]: # skipping headers
         prediction = "no"
     print("Final score")
     print(finalScore)
+    if prediction == correctAnswer:
+        isRight = "correct"
+    else:
+        isRight = "wrong"
 
+    f = open("trace_NB-BOW-OV.txt", "a")
+    f.write(tweetID+ "  " + prediction + "  " + finalScore + "  " + correctAnswer + "  "+ isRight + "\n")
+    f.close()
 
-
-
+    ## TODO: why isthis 100% success rate? discuss with team mate
