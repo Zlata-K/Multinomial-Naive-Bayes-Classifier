@@ -147,6 +147,10 @@ test_lines = test_rawText.split("\n")
 counter = 0 ;
 f = open("trace_NB-BOW-OV.txt", "w")
 f.close()
+
+totalCorrectPredictions = 0
+totalWrongPredictions = 0
+
 for k in lines[1:-1]: # skipping headers
     listOfCols = k.split("\t")
     tweetID = listOfCols[0]
@@ -171,11 +175,26 @@ for k in lines[1:-1]: # skipping headers
     print(finalScore)
     if prediction == correctAnswer:
         isRight = "correct"
+        totalCorrectPredictions += 1
     else:
         isRight = "wrong"
+        totalWrongPredictions += 1
 
     f = open("trace_NB-BOW-OV.txt", "a")
     f.write(tweetID+ "  " + prediction + "  " + finalScore + "  " + correctAnswer + "  "+ isRight + "\n")
     f.close()
 
     ## TODO: why isthis 100% success rate? discuss with team mate
+
+
+#evaluation info
+totalPredictions = totalCorrectPredictions + totalWrongPredictions
+accuracy = totalCorrectPredictions / totalPredictions
+
+#evaluation file clean new file
+f = open("eval_NB-BOW-OV.txt", "w")
+f.close()
+
+print("Accuracy is: "+  str(accuracy))
+f = open("eval_NB-BOW-OV.txt", "a")
+f.close()
