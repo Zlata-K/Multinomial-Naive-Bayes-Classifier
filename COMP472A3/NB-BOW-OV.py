@@ -1,13 +1,16 @@
 import numpy as np
 
+#just used for debugging, can remove when done with the assignment
 def getWordCount():
     return len(vocabulary)
 
+#print values, used for debugging
 def printDictContents():
     for key, value in word_dict.items():
         print("\nKey: %s" % key)
         print("Value: %s" % value)
 
+#function to add smoothing to all the words.
 def smoothDictContents():
     for key, value in word_dict.items():
 
@@ -16,20 +19,22 @@ def smoothDictContents():
         totalCounter = value[2]+smoothing
         word_dict[key] = [fakeCounter, factualCounter, totalCounter]
 
-#tweetList and which class to check for
+#tweetList and which class to check for are the params
+#Objects for words will be fake_count, true_count, totalCount; therefore yes ends up being index 1. No is index 0
 def getScore(tweetList, classification):
     if classification == "yes":
         index_to_check = 1
         totalityOfTweets = smoothedTotalFactualTweets
-        score = np.log10(totalityOfTweets / smoothedTotalTweets)
+        score = np.log10(totalityOfTweets / smoothedTotalTweets) # getting prior
     else:
         index_to_check = 0
         totalityOfTweets = smoothedTotalFakeTweets
-        score = np.log10(totalityOfTweets / smoothedTotalTweets)
+        score = np.log10(totalityOfTweets / smoothedTotalTweets) #getting prior 
 
     for word in tweetList:
         if word in word_dict:
-            score += np.log10(word_dict[word][index_to_check] / totalityOfTweets)
+            #TODO: is it += or *= here? This might be why its 99.5% accurate
+            score += np.log10(word_dict[word][index_to_check] / totalityOfTweets) #calculate full score 
     return score
 
 """
@@ -50,7 +55,7 @@ Testing:
 2. assign class depending on whichever has a better score
 """
 
-
+#given smoothing value
 smoothing = 0.01
 input = open("DataSet/covid_training.tsv","r", encoding="utf8")
 rawText = input.read().lower()
@@ -135,8 +140,8 @@ print("=========================================================================
 print("prior prob of fake: " + str(priorProbabilityFake))
 print("prior prob of factual: " + str(priorProbabilityFactual))
 
-smoothDictContents()
-printDictContents()
+smoothDictContents() #smoothing in order to avoid -infinity
+printDictContents() #check the contents of dict to verify if it worked.
 
 #get testing tweets:
 test_input = open("DataSet/covid_test_public.tsv","r", encoding="utf8")
@@ -148,23 +153,26 @@ counter = 0 ;
 f = open("trace_NB-BOW-OV.txt", "w")
 f.close()
 
-totalCorrectPredictions = 0
+totalCorrectPredictions = 0 
 totalWrongPredictions = 0
 
-for k in lines[1:-1]: # skipping headers
+for k in lines[1:-1]: # skipping headers of the tsv file
     listOfCols = k.split("\t")
     tweetID = listOfCols[0]
-    testing_wordList = listOfCols[1].split(" ")
-    correctAnswer = listOfCols[2]
+    testing_wordList = listOfCols[1].split(" ") #seperate the words in a tweet into a list
+    correctAnswer = listOfCols[2] #the correct classification
 
+    #Get both and check which one is the biggest
     factualScore = getScore(testing_wordList, "yes")
     fakeScore = getScore(testing_wordList, "no")
+
     print("==================================================================")
     print(str(counter))
     print(str(factualScore))
     print(str(fakeScore))
     counter += 1
 
+    #Take the largest score
     if factualScore > fakeScore:
         finalScore = np.format_float_scientific(factualScore, precision=3)
         prediction = "yes"
@@ -173,8 +181,9 @@ for k in lines[1:-1]: # skipping headers
         prediction = "no"
     print("Final score")
     print(finalScore)
+
     if prediction == correctAnswer:
-        isRight = "correct"
+        isRight = "correct" 
         totalCorrectPredictions += 1
     else:
         isRight = "wrong"
@@ -184,7 +193,7 @@ for k in lines[1:-1]: # skipping headers
     f.write(tweetID+ "  " + prediction + "  " + finalScore + "  " + correctAnswer + "  "+ isRight + "\n")
     f.close()
 
-    ## TODO: why isthis 100% success rate? discuss with team mate
+    ## TODO: why isthis 99.5% success rate?
 
 
 #evaluation info
@@ -195,6 +204,7 @@ accuracy = totalCorrectPredictions / totalPredictions
 f = open("eval_NB-BOW-OV.txt", "w")
 f.close()
 
+#evaluation file append to newly created file
 print("Accuracy is: "+  str(accuracy))
 f = open("eval_NB-BOW-OV.txt", "a")
 f.close()
