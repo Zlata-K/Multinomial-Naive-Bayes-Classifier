@@ -34,8 +34,6 @@ def getScore(tweetList, classification):
         if word in word_dict:
             #TODO: is it += or *= here? This might be why its 99.5% accurate
             score += np.log10(word_dict[word][index_to_check] / wordTotalPerClass) #calculate full score 
-            if wordTotalPerClass == 0:
-                print(word)
     return score
 
 def getTotalWordsPerClass(classToCheck):
@@ -46,7 +44,6 @@ def getTotalWordsPerClass(classToCheck):
         index = 0
     for word in word_dict:
         counter += float(word_dict[word][index])
-    print("returning: "+ str(counter))
     return counter
 """
 Training:
@@ -151,7 +148,7 @@ print("prior prob of fake: " + str(priorProbabilityFake))
 print("prior prob of factual: " + str(priorProbabilityFactual))
 
 smoothDictContents() #smoothing in order to avoid -infinity
-#printDictContents() #check the contents of dict to verify if it worked.
+printDictContents() #check the contents of dict to verify if it worked.
 
 #get testing tweets:
 test_input = open("DataSet/covid_test_public.tsv","r", encoding="utf8")
