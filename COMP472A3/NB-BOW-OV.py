@@ -13,7 +13,6 @@ def printDictContents():
 #function to add smoothing to all the words.
 def smoothDictContents():
     for key, value in word_dict.items():
-
         fakeCounter = value[0]+smoothing
         factualCounter = value[1]+smoothing
         totalCounter = value[2]+smoothing
@@ -23,20 +22,32 @@ def smoothDictContents():
 #Objects for words will be fake_count, true_count, totalCount; therefore yes ends up being index 1. No is index 0
 def getScore(tweetList, classification):
     if classification == "yes":
+        wordTotalPerClass = getTotalWordsPerClass("yes")
         index_to_check = 1
-        totalityOfTweets = smoothedTotalFactualTweets
-        score = np.log10(totalityOfTweets / smoothedTotalTweets) # getting prior
+        score = np.log10(priorProbabilityFactual) # getting prior
     else:
+        wordTotalPerClass = getTotalWordsPerClass("no")
         index_to_check = 0
-        totalityOfTweets = smoothedTotalFakeTweets
-        score = np.log10(totalityOfTweets / smoothedTotalTweets) #getting prior 
+        score = np.log10(priorProbabilityFake) #getting prior 
 
     for word in tweetList:
         if word in word_dict:
             #TODO: is it += or *= here? This might be why its 99.5% accurate
-            score += np.log10(word_dict[word][index_to_check] / totalityOfTweets) #calculate full score 
+            score += np.log10(word_dict[word][index_to_check] / wordTotalPerClass) #calculate full score 
+            if wordTotalPerClass == 0:
+                print(word)
     return score
 
+def getTotalWordsPerClass(classToCheck):
+    counter = 0
+    if(classToCheck == "yes"):
+        index = 1
+    else:
+        index = 0
+    for word in word_dict:
+        counter += float(word_dict[word][index])
+    print("returning: "+ str(counter))
+    return counter
 """
 Training:
 1. Get the training set tweets. (set of tweets taht are already classified into the correct category)
@@ -111,7 +122,6 @@ for tweet in tweetList:
         if word not in unsortedVocabulary:
             unsortedVocabulary.append(word)
             
-printDictContents()
 
 #sort the vocabulary
 vocabulary = sorted(unsortedVocabulary)
@@ -141,7 +151,7 @@ print("prior prob of fake: " + str(priorProbabilityFake))
 print("prior prob of factual: " + str(priorProbabilityFactual))
 
 smoothDictContents() #smoothing in order to avoid -infinity
-printDictContents() #check the contents of dict to verify if it worked.
+#printDictContents() #check the contents of dict to verify if it worked.
 
 #get testing tweets:
 test_input = open("DataSet/covid_test_public.tsv","r", encoding="utf8")
@@ -156,7 +166,7 @@ f.close()
 totalCorrectPredictions = 0 
 totalWrongPredictions = 0
 
-for k in lines[1:-1]: # skipping headers of the tsv file
+for k in test_lines[1:-1]: # skipping headers of the tsv file
     listOfCols = k.split("\t")
     tweetID = listOfCols[0]
     testing_wordList = listOfCols[1].split(" ") #seperate the words in a tweet into a list
