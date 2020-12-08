@@ -162,6 +162,12 @@ f.close()
 
 totalCorrectPredictions = 0 
 totalWrongPredictions = 0
+correctYes = 0;
+correctNo = 0;
+yesFP = 0;
+yesFN = 0;
+noFP = 0
+noFN = 0;
 
 for k in test_lines[1:-1]: # skipping headers of the tsv file
     listOfCols = k.split("\t")
@@ -190,9 +196,19 @@ for k in test_lines[1:-1]: # skipping headers of the tsv file
     print(finalScore)
 
     if prediction == correctAnswer:
+        if prediction == "yes":
+            correctYes += 1
+        else:
+            correctNo += 1
         isRight = "correct" 
         totalCorrectPredictions += 1
     else:
+        if correctAnswer == "yes":
+            yesFN += 1
+            noFP += 1
+        else:
+            yesFP += 1
+            noFN += 1
         isRight = "wrong"
         totalWrongPredictions += 1
 
@@ -206,6 +222,12 @@ for k in test_lines[1:-1]: # skipping headers of the tsv file
 #evaluation info
 totalPredictions = totalCorrectPredictions + totalWrongPredictions
 accuracy = totalCorrectPredictions / totalPredictions
+precisionYes = correctYes / (correctYes + yesFP)
+precisionNo = correctNo / (correctNo + noFP)
+recallYes = correctYes / (correctYes + yesFN)
+recallNo = correctNo / (correctNo + noFN)
+f1Yes = 2 * precisionYes * recallYes / (precisionYes + recallYes)
+f1No = 2 * precisionNo * recallNo / (precisionNo + recallNo)
 
 #evaluation file clean new file
 f = open("eval_NB-BOW-OV.txt", "w")
@@ -214,4 +236,10 @@ f.close()
 #evaluation file append to newly created file
 print("Accuracy is: "+  str(accuracy))
 f = open("eval_NB-BOW-OV.txt", "a")
+f.write("Accuracy: "+  str(accuracy) + "\r")
+f.write("Precision: " + str(precisionYes) + "  " + str(precisionNo) + "\r")
+f.write("Recall: " + str(recallYes) + "  " + str(recallNo) + "\r")
+f.write("F1: " + str(f1Yes) + "  " + str(f1No) + "\r")
 f.close()
+
+
