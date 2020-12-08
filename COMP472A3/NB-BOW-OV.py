@@ -156,18 +156,18 @@ test_rawText = test_input.read().lower()
 test_lines = test_rawText.split("\n")
 
 #This takes all the lines from the raw text and saves each head word
-counter = 0 ;
+counter = 0 
 f = open("trace_NB-BOW-OV.txt", "w")
 f.close()
 
 totalCorrectPredictions = 0 
 totalWrongPredictions = 0
-correctYes = 0;
-correctNo = 0;
-yesFP = 0;
-yesFN = 0;
+correctYes = 0
+correctNo = 0
+yesFP = 0
+yesFN = 0
 noFP = 0
-noFN = 0;
+noFN = 0
 
 for k in test_lines[1:-1]: # skipping headers of the tsv file
     listOfCols = k.split("\t")
@@ -216,8 +216,6 @@ for k in test_lines[1:-1]: # skipping headers of the tsv file
     f.write(tweetID+ "  " + prediction + "  " + finalScore + "  " + correctAnswer + "  "+ isRight + "\n")
     f.close()
 
-    ## TODO: why isthis 99.5% success rate?
-
 
 #evaluation info
 totalPredictions = totalCorrectPredictions + totalWrongPredictions
@@ -234,7 +232,6 @@ f = open("eval_NB-BOW-OV.txt", "w")
 f.close()
 
 #evaluation file append to newly created file
-print("Accuracy is: "+  str(accuracy))
 f = open("eval_NB-BOW-OV.txt", "a")
 f.write("Accuracy: "+  str(accuracy) + "\r")
 f.write("Precision: " + str(precisionYes) + "  " + str(precisionNo) + "\r")
