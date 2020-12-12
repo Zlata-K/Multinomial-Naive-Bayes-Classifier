@@ -21,6 +21,7 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="NB-BOW-FV.py" />
     <Compile Include="NB-BOW-OV.py" />
   </ItemGroup>
   <ItemGroup>

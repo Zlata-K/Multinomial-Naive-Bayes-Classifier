@@ -1,5 +1,7 @@
 import numpy as np
 
+min_word_count = 2
+
 #just used for debugging, can remove when done with the assignment
 def getWordCount():
     return len(vocabulary)
@@ -45,6 +47,17 @@ def getTotalWordsPerClass(classToCheck):
     for word in word_dict:
         counter += float(word_dict[word][index])
     return counter
+
+#remove from the dictionary words that don't appear atleast min_word_count times (2 in our case).
+def filterDictionary():
+    removeKeyList = []
+    for key, value in word_dict.items():
+        #index 2 represetns the total amount of appearance of a word, min_word_count defined at the top of file
+        if word_dict[key][2] < min_word_count:
+            removeKeyList.append(key)
+    for word in removeKeyList:
+        word_dict.pop(word,None)
+
 """
 Training:
 1. Get the training set tweets. (set of tweets taht are already classified into the correct category)
@@ -147,6 +160,7 @@ print("=========================================================================
 print("prior prob of fake: " + str(priorProbabilityFake))
 print("prior prob of factual: " + str(priorProbabilityFactual))
 
+filterDictionary() # 
 smoothDictContents() #smoothing in order to avoid -infinity
 printDictContents() #check the contents of dict to verify if it worked.
 
@@ -157,7 +171,7 @@ test_lines = test_rawText.split("\n")
 
 #This takes all the lines from the raw text and saves each head word
 counter = 0 
-f = open("trace_NB-BOW-OV.txt", "w")
+f = open("trace_NB-BOW-FV.txt", "w")
 f.close()
 
 totalCorrectPredictions = 0 
@@ -212,7 +226,7 @@ for k in test_lines[1:-1]: # skipping headers of the tsv file
         isRight = "wrong"
         totalWrongPredictions += 1
 
-    f = open("trace_NB-BOW-OV.txt", "a")
+    f = open("trace_NB-BOW-FV.txt", "a")
     f.write(tweetID+ "  " + prediction + "  " + finalScore + "  " + correctAnswer + "  "+ isRight + "\n")
     f.close()
 
@@ -228,13 +242,15 @@ f1Yes = 2 * precisionYes * recallYes / (precisionYes + recallYes)
 f1No = 2 * precisionNo * recallNo / (precisionNo + recallNo)
 
 #evaluation file clean new file
-f = open("eval_NB-BOW-OV.txt", "w")
+f = open("eval_NB-BOW-FV.txt", "w")
 f.close()
 
 #evaluation file append to newly created file
-f = open("eval_NB-BOW-OV.txt", "a")
+f = open("eval_NB-BOW-FV.txt", "a")
 f.write("Accuracy: "+  str(accuracy) + "\r")
 f.write("Precision: " + str(precisionYes) + "  " + str(precisionNo) + "\r")
 f.write("Recall: " + str(recallYes) + "  " + str(recallNo) + "\r")
 f.write("F1: " + str(f1Yes) + "  " + str(f1No) + "\r")
 f.close()
+
+
