@@ -1,5 +1,4 @@
-472_Assignment3 - COMP 472
-https://github.com/sunsetium/472_Assignment3/
+Multinomial Naive BayesClassifier used for classifying tweets as either factual or misleading/fake.
 
 Team: United We Stand
 
